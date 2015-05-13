@@ -317,7 +317,6 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
                     public void onProgressChanged(SeekBar seekBar,
                             int progress, boolean fromUser) {
                         mProgress = progress;
-                        setTimeMovie();
                     }
                 });
 
