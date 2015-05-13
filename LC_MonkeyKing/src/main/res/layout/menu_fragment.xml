@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/menu_bg"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_height"
+        android:background="@color/title_bg_color" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="6dip"
+            android:text="@string/app_name"
+            android:textColor="@color/title_main_color"
+            android:textSize="@dimen/title_main_dimen" >
+        </TextView>
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@+id/menuList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="2dip"
+                android:layout_marginRight="2dip"
+                android:divider="@color/divider_line"
+                android:dividerHeight="1px" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:paddingBottom="5dip"
+                android:paddingLeft="5dip"
+                android:paddingTop="5dip"
+                android:text="@string/box_channel"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <com.nct.customview.GridviewCustom
+                android:id="@+id/boxList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:cacheColorHint="#00000000"
+                android:drawSelectorOnTop="false"
+                android:footerDividersEnabled="false"
+                android:listSelector="@android:color/transparent"
+                android:numColumns="1"
+                android:scrollbars="none"
+                />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

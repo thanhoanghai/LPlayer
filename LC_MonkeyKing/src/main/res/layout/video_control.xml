@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content" android:orientation="vertical">
+
+	<ImageButton android:id="@+id/explosisBtn"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:background="@drawable/player_btn_explosis"
+		android:contentDescription="@string/empty"
+		android:layout_alignParentTop="true" android:layout_alignParentRight="true" android:visibility="gone"/>
+
+	<ImageButton android:id="@+id/playBtn"
+		android:layout_width="45dip" android:layout_height="45dip"
+		android:layout_centerInParent="true" android:background="@drawable/player_btn_play"
+		android:contentDescription="@string/empty" />
+
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal"
+		android:layout_alignParentBottom="true" android:layout_marginBottom="4dip">
+		<TextView android:id="@+id/startTime" android:layout_width="40dip"
+			android:layout_height="wrap_content" android:layout_gravity="center_vertical" />
+		<SeekBar android:id="@+id/progressTime" android:layout_width="0dip"
+			android:layout_weight="1" android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical" />
+		<TextView android:id="@+id/endTime" android:layout_width="40dip"
+			android:layout_height="wrap_content" android:layout_gravity="center_vertical" />
+		<ImageButton android:id="@+id/zoomBtn"
+			android:layout_width="45dip" android:layout_height="45dip"
+			android:background="@drawable/player_btn_play"
+			android:contentDescription="@string/empty" />
+	</LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/lnrListItem" android:layout_width="140dip"
+	android:layout_height="wrap_content" android:orientation="vertical"
+	android:padding="5dp">
+
+	<ImageView android:id="@+id/thumb" android:layout_width="140dip"
+		android:layout_height="200dip" android:contentDescription="@string/empty"
+		android:scaleType="fitCenter" />
+
+	<FrameLayout android:layout_width="match_parent"
+		android:layout_gravity="bottom|center" android:layout_height="wrap_content"
+		android:background="@drawable/playing_top_layout_cover"
+		android:layout_alignParentBottom="true">
+		<TextView android:id="@+id/title" android:layout_width="wrap_content"
+			android:textStyle="bold" android:layout_height="wrap_content"
+			android:textSize="@dimen/title_item" android:lines="2"
+			android:gravity="center" android:textColor="@color/title_item"
+			android:layout_gravity="center" />
+	</FrameLayout>
+</RelativeLayout>

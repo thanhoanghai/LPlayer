@@ -1,0 +1,17 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:title="About Us">
+		<Preference android:title="Help Center" android:key="helpcenter" />
+		<Preference android:title="Request Movie" android:key="requestmovie" />
+		<Preference android:title="Report a Problem" android:key="requestproblem" />
+		<Preference android:title="Contact Us" android:key="contactus"/>
+		<Preference android:title="Share App With Your Friends" android:key="shareapp"/>
+		<Preference android:title="Term-Policies" android:key="termpolicies"/>
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="Config Mode">
+		<CheckBoxPreference android:key="checkbox_preference"
+			android:title="Kids Mode" android:summary="Whether show Kids Films or not" />
+	</PreferenceCategory>
+
+</PreferenceScreen>

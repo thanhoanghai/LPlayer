@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/myprogress" android:oneshot="false">
+	<item android:drawable="@drawable/sapi_loading_001_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_002_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_003_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_004_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_005_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_006_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_007_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_008_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_009_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_010_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_011_b"
+		android:duration="100" />
+	<item android:drawable="@drawable/sapi_loading_012_b"
+		android:duration="100" />
+</animation-list>

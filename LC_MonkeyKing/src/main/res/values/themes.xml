@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="topic_detail_shadow_style">
+        <item name="android:shadowColor">#cc000000</item>
+        <item name="android:shadowDx">0.0</item>
+        <item name="android:shadowDy">2.0</item>
+        <item name="android:shadowRadius">1.0</item>
+    </style>
+
+    <style name="local_list_item_line_1_text">
+        <item name="android:textSize">16.0dip</item>
+        <item name="android:textColor">@color/ui_list_item_title_color</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:duplicateParentState">true</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+</resources>

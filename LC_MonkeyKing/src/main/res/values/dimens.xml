@@ -1,0 +1,18 @@
+<resources>
+
+	<dimen name="slidingmenu_offset">60dp</dimen>
+	<dimen name="list_padding">10dp</dimen>
+	<dimen name="shadow_width">15dp</dimen>
+	<dimen name="thumb_width">120dip</dimen>
+	<dimen name="thumb_height">240dip</dimen>
+	<dimen name="title_main_dimen">18sp</dimen>
+	<dimen name="item_size">20sp</dimen>
+	<dimen name="thumb_padding">12dip</dimen>
+	<dimen name="title_height">56dip</dimen>
+	<dimen name="title_item">16sp</dimen>
+	<dimen name="activity_vertical_margin">16dip</dimen>
+	<dimen name="title_size">18sp</dimen>
+	<dimen name="actor_size">16sp</dimen>
+	<dimen name="online_search_height">40.0dip</dimen>
+
+</resources>

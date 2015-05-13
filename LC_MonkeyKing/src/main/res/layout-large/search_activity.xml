@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/search_bar_container"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/online_search_height"
+        android:background="#fff2f4f5"
+        android:gravity="center"
+        android:paddingLeft="3.0dip"
+        android:paddingRight="3.0dip" >
+
+        <AutoCompleteTextView
+            android:id="@+id/search_bar_et"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:completionThreshold="2"
+            android:cursorVisible="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:hint="@string/search_hint"
+            android:imeOptions="actionSearch|flagNoExtractUi"
+            android:maxLines="1"
+            android:paddingLeft="15.0dip"
+            android:paddingRight="15.0dip"
+            android:singleLine="true"
+            android:textColor="#ff667780"
+            android:textSize="12.0dip" />
+
+        <ImageButton
+            android:id="@+id/edit_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="6.0dip"
+            android:background="@null"
+            android:src="@drawable/bt_search_clean"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/search_suggestion"
+            style="@style/local_list_item_line_1_text"
+            android:layout_width="wrap_content"
+            android:layout_height="28.0dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8.0dip"
+            android:background="@drawable/btn_voice_suggestion"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:maxLength="10"
+            android:maxWidth="230.0dip"
+            android:paddingLeft="10.0dip"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <GridView
+            android:id="@+id/filmsGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:horizontalSpacing="10dp"
+            android:numColumns="3"
+            android:padding="10dp"
+            android:scrollbars="none"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/loadingBtn"
+            style="@android:style/Widget.ProgressBar.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <ImageButton
+            android:id="@+id/disconnectBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/bt_disconnect"
+            android:contentDescription="@string/empty"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</LinearLayout>

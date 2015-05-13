@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="menus">
+        <item>Movie</item>
+        <item>Show</item>
+        <item>Cartoon</item>
+        <item>Anime</item>
+    </string-array>
+
+</resources>

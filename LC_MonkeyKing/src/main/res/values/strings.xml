@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="download_movie">Download movie :</string>
+    <string name="app_name">Play Box</string>
+    <string name="empty"></string>
+    <string name="tab_hot">Hot</string>
+    <string name="tab_new">New</string>
+    <string name="tab_favorite">Favorite</string>
+    <string name="stream_link">Sources</string>
+    <string name="explosis">Explosis</string>
+    <string name="subtitle">Subtitle</string>
+    <string name="failed">Playback Fail</string>
+    <string name="dangtaichochutnhe">Waiting for loading</string>
+    <string name="durationformatshort" translatable="false"><xliff:g id="format">%2$d:%5$02d</xliff:g></string>
+    <!-- Do not translate. Duration format for duration >= 1 hour -->
+    <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%3$02d:%5$02d</xliff:g></string>
+    <string name="setting_title">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_category">Category</string>
+    <string name="search_hint">Enter the film title to search</string>
+    <string name="box_channel">Box Channel</string>
+    <string name="error_insufficient_space">SDCARD is full. You can not download any movies.</string>
+    <string name="deviceInfo">{\"DeviceID\":\"%1$s\",\"OsName\":\"Android\",\"OsVersion\":\"%2$s\",\"AppName\":\"PlayBox\",\"AppVersion\":\"1.0.0\"}</string>
+    <string name="app_id">4F8B3483</string>
+    <string name="action_settings">Settings</string>
+    <string name="cast_app_name">GoogleCastPlayer</string>
+    <string name="media_route_menu_title">Play on&#8230;</string>
+    <string name="list_of_videos">Select a Video Clip</string>
+    <string name="casting_to_device">Casting to %1$s</string>
+    <string name="ok">OK</string>
+    <string name="no_device">(No Device Selected)</string>
+    <string name="error">Error</string>
+    <string name="pause">Pause</string>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="no_video_found">No video was found</string>
+    <string name="about_app">About DemoCast Player</string>
+    <string name="version">CastVideos: %1$s, CCL: %2$s</string>
+    <string name="session_reconnection_attempt">Attempting to recover previous session&#8230;</string>
+
+    <!-- Error messages -->
+    <string name="failed_to_set_volume">Failed to set the volume</string>
+    <string name="failed_to_launch_app">Failed to launch application</string>
+    <string name="failed_to_set_mute">Failed to adjust the volume mute</string>
+    <string name="failed_to_find_app">The application you are trying to launch is not available on your Chromecast device</string>
+    <string name="failed_app_launch_timeout">The request to launch the application has timed out!</string>
+    <string name="failed_to_play">Failed to start the playback of media</string>
+    <string name="failed_to_pause">Failed to pause the playback of media</string>
+    <string name="failed_to_connect">Could not connect to the device</string>
+    <string name="failed_to_seek">Failed to seek to the specified position on the remote device</string>
+    <string name="video_error_media_load_timeout">Media loading timed out</string>
+    <string name="video_error_server_unaccessible">Media server was not reachable</string>
+    <string name="video_error_unknown_error">Failed to load video</string>
+    <string name="connection_temp_lost">Connection to the cast device is temporarily lost</string>
+    <string name="connection_recovered">Connection to the cast device is recovered</string>
+    <string name="connection_lost_retry">Connection to the cast device has been temporarily lost. Application is trying to recover connection, please try again later</string>
+    <string name="connection_lost">No connection to the cast device exist</string>
+    <string name="failed_to_perform_action">Sorry, ran into issues performing the task you wanted</string>
+    <string name="oops">Oops</string>
+
+    <!-- Preferences -->
+    <string name="prefs_header_application">Application Behavior</string>
+    <string name="prefs_header_application_summary">Control how the application behaves on the TV</string>
+    <string name="prefs_termination_policy_default">0</string>
+    <string name="prefs_termination_policy_dialog_title">When Disconnecting</string>
+    <string name="prefs_volume_title">Volume Assignment</string>
+    <string name="prefs_volume_title_summary">Controls %1$s</string>
+    <string name="prefs_volume_dialog_title">Volume Assignment</string>
+    <string name="prefs_volume_default">device</string>
+    <string name="title_activity_test">TestActivity</string>
+
+    <!-- Tabs -->
+    <string name="tab_videos_title">Videos</string>
+    <string name="tab_music_title">Songs</string>
+    <string name="tab_photos_title">Photos</string>
+
+    <!-- ShowCaseView -->
+    <string name="touch_to_cast">Touch to cast videos to your TV</string>
+
+    <!-- Captions -->
+    <string name="captions_settings">Captions Settings</string>
+    <string name="captions">Captions</string>
+    <string name="play_media">Select Media&#8230;</string>
+    <string name="attach_to_session">Attach to Session</string>
+    <string name="scan_failed_network_error">Unable to scan for devices. Check your network settings.</string>
+    <string name="launch_app">Launch App</string>
+    <string name="join_app">Join App</string>
+    <string name="leave_app">Leave App</string>
+    <string name="stop_app">Stop App</string>
+    <string name="start_session">Start Session</string>
+    <string name="end_session">End Session</string>
+    <string name="no_time">--:--</string>
+    <string name="select_mode">Select a mode:</string>
+    <string name="select_notifications_mode">Select alert type(s):</string>
+    <string name="sdk_mode_button">Cast SDK Mode</string>
+    <string name="mrp_mode_button">MediaRouter Mode</string>
+    <string name="mrp_request_failed">The MediaRoute request has failed.</string>
+    <string name="device_volume">Device Vol:</string>
+    <string name="stream_volume">Stream Vol:</string>
+    <string name="select_media">Select Media</string>
+    <string name="media_art_description">Image that represents the currently playing media</string>
+    <string name="list_empty">No items available</string>
+    <string name="after_seek">After seeking:</string>
+    <string name="autoplay">Autoplay</string>
+    <string name="status_app_disconnected">Connection to receiver application has closed.</string>
+
+    <string-array name="seek_behaviors">
+        <item>Do Nothing</item>
+        <item>Play</item>
+        <item>Pause</item>
+    </string-array>
+
+    <!-- Application preferences -->
+    <string name="media_list_url"></string>
+    <string name="media_list_url_pref">Media list URL</string>
+    <string name="summary_media_list_url_pref">Specify the URL from which the media list should be downloaded.</string>
+    <string name="dialog_title_media_list_url_pref">Enter the media list URL:</string>
+    <string name="receiver_application_id_pref">Receiver application ID</string>
+    <string name="summary_receiver_application_id_pref">Specify the receiver application ID.</string>
+    <string name="dialog_title_receiver_application_id_pref">Enter the receiver application ID:</string>
+    <string name="relaunch_app_pref">Always relaunch receiver app</string>
+    <string name="summary_relaunch_app_pref">If checked, launch always relaunches; otherwise, it tries to join first.</string>
+    <string name="stop_app_pref">Stop receiver app when ending session</string>
+    <string name="summary_stop_app_pref">If checked, ending a session will terminate the receiver application.</string>
+    <string name="timeout_interval_pref">Timeout interval</string>
+    <string name="summary_timeout_interval_pref">The connection inactivity timeout, in seconds.</string>
+
+    <!-- Error messages. -->
+    <string name="error_load_media_failed">Failed to load the media.</string>
+    <string name="error_no_controller">Unable to acquire controller.</string>
+    <string name="error_no_device_connection">Unable to connect to device.</string>
+    <string name="error_lost_device_connection">Lost connection to device.</string>
+    <string name="error_app_launch_failed">Unable to launch application.</string>
+    <string name="error_app_join_failed">Unable to join application.</string>
+    <string name="error_app_leave_failed">Unable to leave application.</string>
+    <string name="error_app_stop_failed">Unable to stop application.</string>
+
+</resources>

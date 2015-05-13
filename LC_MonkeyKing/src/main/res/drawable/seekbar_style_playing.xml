@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <nine-patch
+            android:dither="true"
+            android:src="@drawable/progress_bar_playing_bg" />
+    </item>
+    <item android:id="@android:id/secondaryProgress">
+        <clip>
+            <nine-patch
+                android:dither="true"
+                android:src="@drawable/progress_bar_playing_second" />
+        </clip>
+    </item>
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="5.0dip" />
+                <gradient
+                    android:angle="90.0"
+                    android:endColor="#ff7bbcff"
+                    android:startColor="#ff2b87e5"
+                    android:type="linear" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>

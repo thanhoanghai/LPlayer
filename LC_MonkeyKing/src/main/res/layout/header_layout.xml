@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="match_parent"
+	android:layout_height="wrap_content" >
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal" android:padding="4dip">
+
+		<ImageView android:id="@+id/thumb" android:layout_width="100dip"
+			android:layout_height="160dip" android:contentDescription="@string/empty"
+			android:scaleType="fitXY" />
+
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:orientation="vertical"
+			android:layout_marginLeft="4dip" android:layout_marginRight="4dip"
+			android:layout_gravity="center_vertical">
+
+			<TextView android:id="@+id/title" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:textColor="@color/detail_text"
+				android:textSize="@dimen/title_size" />
+
+			<TextView android:id="@+id/actor" android:layout_width="wrap_content"
+				android:textSize="@dimen/actor_size" android:layout_height="wrap_content"
+				android:textColor="@color/detail_text" />
+
+			<TextView android:id="@+id/brief" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:maxLines="6"
+				android:textColor="@color/detail_text" />
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+	<TextView android:id="@+id/description" android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:textColor="@color/detail_text"
+		android:layout_marginLeft="4dip" android:layout_marginRight="4dip"
+		android:visibility="gone" />
+
+	<View android:layout_width="match_parent" android:background="@android:color/darker_gray"
+		android:layout_height="1dip" android:layout_marginTop="2dip"/>
+</LinearLayout>

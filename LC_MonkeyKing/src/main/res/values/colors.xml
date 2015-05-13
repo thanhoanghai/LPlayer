@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="title_main_color">#ffffffff</color>
+	<color name="title_bg_color">#609DD2</color>
+	<color name="menu_bg">#333333</color>
+	<color name="divider_line">#3E3F3E</color>
+	<color name="actionbar_text">#ffffffff</color>
+	<color name="actionbar_background">#609DD2</color>
+	<color name="title_item">#ffffffff</color>
+	<color name="detail_text">#333333</color>
+	<color name="tab_text">#609DD2</color>
+	<color name="content_bg">#FAFAFA</color>
+	<color name="color1">#ff0f9d58</color>
+	<color name="color2">#ffdb4437</color>
+	<color name="color3">#ff4285f4</color>
+	<color name="color4">#fff4b400</color>
+	<color name="ui_list_item_title_color">#ff333333</color>
+	<color name="soft_opaque">#30000000</color>
+    <color name="img_soft_opaque">#30FF0000</color>
+    <color name="img_full_opaque">#00000000</color>
+    <color name="black_opaque">#AA000000</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="orange_transparent">#AAFADCA7</color>
+    <color name="orange">#FADCA7</color>
+    <color name="casting_media_control_bg">#2c393d</color>
+    <color name="yellow">#EEFF41</color>
+    <color name="mr_custom_title">#EEFF41</color>
+    <color name="actionbar">#506a7d</color>
+</resources>
