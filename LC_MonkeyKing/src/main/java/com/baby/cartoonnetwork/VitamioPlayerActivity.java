@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.MediaCodec.CryptoException;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -536,92 +537,83 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
             Debug.logData(TAG, "loadVideoLink");
             showLoading();
-            final Handler handler = new Handler();
-            runOnUiThread(new Runnable() {
+            try {
+                Map<Integer, JSONObject> data = StreamUtils
+                        .parseFilm(StreamUtils
+                                .getJSONObject(streamObject.cf));
+                if (streamObject.data.get(mPosition).parseType == 0) {
+                    // url = streamObject.data.get(mPosition).stream;
+                    // Debug.logData(TAG, url);
 
-                @Override
-                public void run() {
-                    try {
+                    mMessageSeekbar.sendEmptyMessage(0);
 
-                        Map<Integer, JSONObject> data = StreamUtils
-                                .parseFilm(StreamUtils
-                                        .getJSONObject(streamObject.cf));
-                        if (streamObject.data.get(mPosition).parseType == 0) {
-                            // url = streamObject.data.get(mPosition).stream;
-                            // Debug.logData(TAG, url);
+                    nowPlayingStream = streamObject.data
+                            .get(mPosition).stream;
+                    lastStream = streamObject.data
+                            .get(mPosition);
+                    playVideo();
+                } else {
+                    getLinks(
+                            streamObject.data.get(mPosition), data,
+                            new ActionCallback<List<StreamObject>>() {
+                                @Override
+                                public void onComplete(List<StreamObject> callbackData) {
+                                    ArrayList<StreamObject> values = (ArrayList<StreamObject>) callbackData;
 
-                            mMessageSeekbar.sendEmptyMessage(0);
+                                    if (values != null && values.size() > 0) {
 
-                            nowPlayingStream = streamObject.data
-                                    .get(mPosition).stream;
-                            lastStream = streamObject.data
-                                    .get(mPosition);
-                            playVideo();
-                        } else {
-                            ArrayList<StreamObject> values = getLinks(
-                                    streamObject.data.get(mPosition), data);
-                            if (values != null && values.size() > 0) {
-
-                                if (values.size() == 1) {
-                                    nowPlayingStream = values.get(0).stream;
-                                    lastStream = streamObject.data
-                                            .get(mPosition);
-                                    streamObject.data.get(mPosition).quality = values.get(0).quality;
-                                } else {
-                                    // remove old parsed
-                                    String orgStream = streamObject.data.get(mPosition).stream;
-                                    int i = 0;
-                                    while (i < streamObject.data.size()) {
-                                        StreamObject obj = streamObject.data.get(i);
-                                        if (obj.sourceParsed != null
-                                                && obj.sourceParsed.equals(orgStream)) {
-                                            streamObject.data.remove(i);
+                                        if (values.size() == 1) {
+                                            nowPlayingStream = values.get(0).stream;
+                                            lastStream = streamObject.data
+                                                    .get(mPosition);
+                                            streamObject.data.get(mPosition).quality = values
+                                                    .get(0).quality;
                                         } else {
-                                            i++;
-                                        }
-                                    }
-                                    streamObject.data.addAll(mPosition + 1, values);
+                                            // remove old parsed
+                                            String orgStream = streamObject.data.get(mPosition).stream;
+                                            int i = 0;
+                                            while (i < streamObject.data.size()) {
+                                                StreamObject obj = streamObject.data.get(i);
+                                                if (obj.sourceParsed != null
+                                                        && obj.sourceParsed.equals(orgStream)) {
+                                                    streamObject.data.remove(i);
+                                                } else {
+                                                    i++;
+                                                }
+                                            }
+                                            streamObject.data.addAll(mPosition + 1, values);
 
-                                    StreamObject bestObject = StreamUtils.findBestStream(values,
-                                            lastStream);
-                                    lastStream = bestObject;
-                                    nowPlayingStream = bestObject.stream;
-                                    mPosition = streamObject.data.indexOf(bestObject);
+                                            StreamObject bestObject = StreamUtils.findBestStream(
+                                                    values,
+                                                    lastStream);
+                                            lastStream = bestObject;
+                                            nowPlayingStream = bestObject.stream;
+                                            mPosition = streamObject.data.indexOf(bestObject);
 
-                                    handler.post(new Runnable() {
-                                        public void run() {
                                             StreamFragment.updateData(streamObject.data);
                                         }
-                                    });
-                                }
-                                // Debug.logData(TAG, url);
-                                playVideo();
-                                mMessageSeekbar.sendEmptyMessage(0);
-                            } else {
-                                streamObject.data.remove(mPosition);
-                                handler.post(new Runnable() {
-                                    public void run() {
+                                        // Debug.logData(TAG, url);
+                                        playVideo();
+                                        mMessageSeekbar.sendEmptyMessage(0);
+                                    } else {
+                                        streamObject.data.remove(mPosition);
                                         StreamFragment.updateData(streamObject.data);
+
+                                        if (streamObject.data.size() == 0) {
+                                            showDialogNoLink().show();
+                                        } else {
+                                            mPosition = 0;
+                                            loadVideoLink();
+                                        }
                                     }
-                                });
-
-                                if (streamObject.data.size() == 0) {
-                                    showDialogNoLink().show();
-                                } else {
-                                    mPosition = 0;
-                                    loadVideoLink();
                                 }
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                            });
                 }
-
-            });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             showDialogNoLink().show();
         }
@@ -728,14 +720,38 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
     private final String baseLink = Constants.SERVICE_URL
             + "type=directlink&id=%s";
 
-    public ArrayList<StreamObject> getLinks(StreamObject stream,
-            Map<Integer, JSONObject> data) throws JSONException {
-        emptyJson = StreamUtils.getJSONObject("{}");
-        JSONObject dic = data.get(stream.parseType);
-        ArrayList<String> result = new ArrayList<String>();
-        parseLink(stream.stream, dic, result);
+    private interface ActionCallback<T> {
+        public void onComplete(T callbackData);
+    }
 
-        return StreamUtils.parserStream(result, stream.quality, stream.server, stream.stream);
+    public void getLinks(final StreamObject stream,
+            final Map<Integer, JSONObject> data, final ActionCallback<List<StreamObject>> callback) {
+        new AsyncTask<Void, Void, List<StreamObject>>() {
+            @Override
+            protected List<StreamObject> doInBackground(Void... params) {
+                emptyJson = StreamUtils.getJSONObject("{}");
+                JSONObject dic = data.get(stream.parseType);
+                ArrayList<String> result = new ArrayList<String>();
+                try {
+                    parseLink(stream.stream, dic, result);
+
+                    return StreamUtils.parserStream(result, stream.quality, stream.server,
+                            stream.stream);
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(List<StreamObject> result) {
+                super.onPostExecute(result);
+                if (callback != null) {
+                    callback.onComplete(result);
+                }
+            }
+        }.execute();
+
     }
 
     public Collection<String> stringMatcherRegex(String data, String regex,
