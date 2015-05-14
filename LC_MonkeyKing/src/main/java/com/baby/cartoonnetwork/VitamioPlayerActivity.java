@@ -435,6 +435,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
         if (streamObject.data.size() > 0) {
             mPosition = 0;
+            Debug.logData(TAG, "loadVideoLink on error");
             loadVideoLink();
         } else {
             showDialog();
@@ -529,9 +530,6 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
         if (streamObject.data != null && streamObject.data.size() > 0)
         {
-            // ncnlam
-            mPosition = streamObject.data.size() - 1;
-
             // init link stream
             nowPlayingStream = "";
 
@@ -553,13 +551,10 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
                             .get(mPosition);
                     playVideo();
                 } else {
-                    getLinks(
-                            streamObject.data.get(mPosition), data,
+                    getLinks(streamObject.data.get(mPosition), data,
                             new ActionCallback<List<StreamObject>>() {
                                 @Override
-                                public void onComplete(List<StreamObject> callbackData) {
-                                    ArrayList<StreamObject> values = (ArrayList<StreamObject>) callbackData;
-
+                                public void onComplete(List<StreamObject> values) {
                                     if (values != null && values.size() > 0) {
 
                                         if (values.size() == 1) {
@@ -603,6 +598,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
                                             showDialogNoLink().show();
                                         } else {
                                             mPosition = 0;
+                                            Debug.logData(TAG, "loadVideoLink parser link empty");
                                             loadVideoLink();
                                         }
                                     }
@@ -632,6 +628,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
     private void playVideo()
     {
+        Debug.logData(TAG, "Playing: " + nowPlayingStream);
         // Intent intent = new Intent(Intent.ACTION_VIEW);
         // intent.setDataAndType(Uri.parse(nowPlayingStream), "video/*");
         // startActivity(intent);
@@ -644,7 +641,6 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         videoView.start();
 
         // String videoUrl = streamObject.data.get(mPosition).stream;
-        Debug.logData(TAG, "url: " + nowPlayingStream);
         String imageurl = chapterPoster;
         String bigImageurl = chapterPoster;
         String title = chapterTitle;
@@ -712,6 +708,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         Debug.logData(TAG, "onStreamChangeListener");
         nowPlayingStream = "";
         mPosition = position;
+        Debug.logData(TAG, "loadVideoLink onstreamchange");
         loadVideoLink();
     }
 
@@ -751,7 +748,6 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
                 }
             }
         }.execute();
-
     }
 
     public Collection<String> stringMatcherRegex(String data, String regex,
