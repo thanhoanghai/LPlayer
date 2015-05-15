@@ -19,6 +19,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -53,6 +55,7 @@ import com.baby.model.StreamResult;
 import com.baby.parselink.DecodeType;
 import com.baby.parselink.LinkType;
 import com.baby.parselink.StreamUtils;
+import com.baby.policy.ActionCallback;
 import com.baby.utils.Debug;
 import com.baby.utils.StringEscapeUtils;
 import com.baby.utils.Utils;
@@ -75,6 +78,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -91,11 +95,13 @@ import java.util.regex.Pattern;
 
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnPreparedListener;
+import io.vov.vitamio.MediaPlayer.OnTimedTextListener;
 
 public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         SurfaceHolder.Callback, ExoPlayer.Listener,
         MediaCodecVideoTrackRenderer.EventListener, OnTouchListener,
-        OnClickListener, StreamListener, ExplosisListener, CastingFilmSuccess, OnPreparedListener {
+        OnClickListener, StreamListener, ExplosisListener, CastingFilmSuccess, OnPreparedListener,
+        OnTimedTextListener {
 
     private static final String TAG = VitamioPlayerActivity.class.getName();
 
@@ -174,6 +180,9 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
     private boolean mIsUserSeeking;
 
     private PlayBoxVideoView videoView;
+
+    private TextView tvSubTitle;
+    private String subTitlePath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -316,7 +325,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
-                            int progress, boolean fromUser) {
+                                                  int progress, boolean fromUser) {
                         mProgress = progress;
                     }
                 });
@@ -347,6 +356,9 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
         getScreenSize();
         resize();
+
+        tvSubTitle = (TextView) findViewById(R.id.tvSubTitle);
+
     }
 
     @Override
@@ -636,9 +648,22 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         contentUri = Uri.parse(nowPlayingStream);
         contentType = TYPE_OTHER;
 
-        videoView.stopPlayback();
-        videoView.setVideoPath(nowPlayingStream);
-        videoView.start();
+        tvSubTitle.setText("");
+
+        DownloaderUtils
+                .downloadSubTitle(
+                        this,
+                        "http://subscene.com/subtitle/download?mac=QPPd1zX0Sq3uIy9N9v7P1sN7lDHHWIpZarWcT4l_j0SKNX90MCCMzI3353Q6wALP0",
+                        new ActionCallback<File>() {
+                            @Override
+                            public void onComplete(File subTitleFile) {
+                                subTitlePath = subTitleFile.getAbsolutePath();
+
+                                videoView.stopPlayback();
+                                videoView.setVideoPath(nowPlayingStream);
+                                videoView.start();
+                            }
+                        });
 
         // String videoUrl = streamObject.data.get(mPosition).stream;
         String imageurl = chapterPoster;
@@ -676,6 +701,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
     }
 
     private void showVideo() {
+        tvSubTitle.setText("");
         loadingData.setVisibility(View.GONE);
         hideController();
     }
@@ -709,6 +735,9 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         nowPlayingStream = "";
         mPosition = position;
         Debug.logData(TAG, "loadVideoLink onstreamchange");
+
+        tvSubTitle.setText("");
+        videoView.setTimedTextShown(false);
         loadVideoLink();
     }
 
@@ -716,10 +745,6 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
     private final String baseLink = Constants.SERVICE_URL
             + "type=directlink&id=%s";
-
-    private interface ActionCallback<T> {
-        public void onComplete(T callbackData);
-    }
 
     public void getLinks(final StreamObject stream,
             final Map<Integer, JSONObject> data, final ActionCallback<List<StreamObject>> callback) {
@@ -935,11 +960,15 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
             getWindow().clearFlags(
                     WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             fullscreenBtn.setImageResource(R.drawable.scale_button);
+
+            tvSubTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         } else {
             getWindow().addFlags(
                     WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             fullscreenBtn.setImageResource(R.drawable.fullscreen_button);
+
+            tvSubTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         }
 
         resize();
@@ -1252,6 +1281,12 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
     public void onPrepared(MediaPlayer mediaPlayer) {
         showVideo();
 
+        if (subTitlePath != null && subTitlePath.length() > 0) {
+            videoView.addTimedTextSource(subTitlePath);
+            videoView.setTimedTextShown(true);
+            videoView.setOnTimedTextListener(VitamioPlayerActivity.this);
+        }
+
         media_width = mediaPlayer.getVideoWidth();
         media_height = mediaPlayer.getVideoHeight();
         Debug.logError(TAG, "media_width= " + media_width);
@@ -1265,4 +1300,16 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
         playerState = PlayerState.PLAYING;
     }
+
+    @Override
+    public void onTimedText(String s) {
+        Log.i("subtitle", s);
+        tvSubTitle.setText(s);
+    }
+
+    @Override
+    public void onTimedTextUpdate(byte[] bytes, int i, int i1) {
+
+    }
+
 }

@@ -29,4 +29,6 @@ public class Constants {
 	public static final String AES_KEY = "qwertyuiopasdfghjklzxc1234567890";
 
 	public static final String FOLDER_DOWNLOAD = "/PlayBox/";
+
+	public static final String FOLDER_SUBTITLES = "/PlayBox-Subtitles/";
 }

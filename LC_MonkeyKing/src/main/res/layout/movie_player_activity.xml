@@ -9,7 +9,7 @@
     <FrameLayout
         android:id="@+id/contentVideo"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
+        android:layout_height="0dp"
         android:layout_weight="0.1"
         android:background="@android:color/black">
 
@@ -19,12 +19,23 @@
             android:layout_height="match_parent"
             android:layout_gravity="center" />
 
+        <TextView
+            android:id="@+id/tvSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
         <FrameLayout
             android:id="@+id/controlContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            android:minHeight="150dp">
+            android:minHeight="150dp"
+            android:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/info_top_layout"
@@ -166,7 +177,8 @@
             android:layout_gravity="center"
             android:background="@android:color/black"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <include
                 layout="@layout/activity_player_loading_video"
