@@ -162,15 +162,15 @@ public class DownloaderUtils {
     public static void downloadSubTitle(final Context context, String chapterTitle,
             String subtitleLink, final ActionCallback<File> onComplete) {
         try {
-            chapterTitle = chapterTitle.replaceAll("\\W", "-");
+            final String name = chapterTitle.replaceAll("\\W", "-");
             final File subFolder = new File(
                     context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) +
-                            Constants.FOLDER_SUBTITLES, chapterTitle);
+                            Constants.FOLDER_SUBTITLES, name);
             if (!subFolder.exists()) {
                 subFolder.mkdirs();
             }
 
-            File subFile = new File(subFolder, chapterTitle + ".zip");
+            File subFile = new File(subFolder, name + ".zip");
             if (!subFile.exists()) {
                 subFile.createNewFile();
             }
@@ -179,7 +179,7 @@ public class DownloaderUtils {
                 @Override
                 public void onComplete(final File zipFile) {
                     if (zipFile.exists()) {
-                        unzip(zipFile, subFolder, new ActionCallback() {
+                        unzip(zipFile, subFolder, name + ".srt", new ActionCallback() {
                             @Override
                             public void onComplete(Object callbackData) {
                                 zipFile.delete();
@@ -248,6 +248,7 @@ public class DownloaderUtils {
     }
 
     public static void unzip(final File zipFile, final File targetDirectory,
+            final String unzipFileName,
             final ActionCallback callback) {
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -260,7 +261,8 @@ public class DownloaderUtils {
                     int count;
                     byte[] buffer = new byte[8192];
                     while ((ze = zis.getNextEntry()) != null) {
-                        File file = new File(targetDirectory, ze.getName());
+                        String fileName = unzipFileName == null ? ze.getName() : unzipFileName;
+                        File file = new File(targetDirectory, fileName);
                         File dir = ze.isDirectory() ? file : file.getParentFile();
                         if (!dir.isDirectory() && !dir.mkdirs())
                             throw new FileNotFoundException("Failed to ensure directory: " +

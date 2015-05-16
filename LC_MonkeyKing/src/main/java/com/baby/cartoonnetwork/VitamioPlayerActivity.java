@@ -1189,7 +1189,9 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements Surf
                                                                     convertedContent,
                                                                     subTitlePath);
 
-                                                            addSubtitleToVideo();
+                                                            videoView.stopPlayback();
+                                                            videoView.setVideoPath(nowPlayingStream);
+                                                            videoView.start();
                                                         }
 
                                                         dialogLoading.dismiss();
