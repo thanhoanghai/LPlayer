@@ -2,6 +2,7 @@
 package com.baby.cartoonnetwork;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -28,17 +29,22 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baby.adapters.SubtitleAdapter;
 import com.baby.chromecast.SdkCastPlayerActivity;
 import com.baby.chromecast.SdkCastPlayerActivity.CastingFilmSuccess;
 import com.baby.constant.Constants;
 import com.baby.constant.GlobalSingleton;
+import com.baby.customview.PinnedHeaderListView;
 import com.baby.customview.PlayBoxVideoView;
 import com.baby.dataloader.URLProvider;
 import com.baby.dbdownloader.DownloaderUtils;
@@ -55,6 +61,7 @@ import com.baby.model.StreamResult;
 import com.baby.parselink.DecodeType;
 import com.baby.parselink.LinkType;
 import com.baby.parselink.StreamUtils;
+import com.baby.parselink.SubsceneParseList;
 import com.baby.policy.ActionCallback;
 import com.baby.utils.Debug;
 import com.baby.utils.StringEscapeUtils;
@@ -94,14 +101,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.MediaPlayer.OnErrorListener;
 import io.vov.vitamio.MediaPlayer.OnPreparedListener;
 import io.vov.vitamio.MediaPlayer.OnTimedTextListener;
 
-public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
-        SurfaceHolder.Callback, ExoPlayer.Listener,
-        MediaCodecVideoTrackRenderer.EventListener, OnTouchListener,
+public class VitamioPlayerActivity extends SdkCastPlayerActivity implements SurfaceHolder.Callback,
+        ExoPlayer.Listener, MediaCodecVideoTrackRenderer.EventListener, OnTouchListener,
         OnClickListener, StreamListener, ExplosisListener, CastingFilmSuccess, OnPreparedListener,
-        OnTimedTextListener {
+        OnErrorListener, OnTimedTextListener {
 
     private static final String TAG = VitamioPlayerActivity.class.getName();
 
@@ -118,6 +125,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
     public static String chapterID = "";
     public String chapterTitle = "Unknown";
     public String chapterPoster = "Unknown";
+    public String subsceneLink;
     // private String url = "";
 
     private TextView startTime;
@@ -184,6 +192,12 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
     private TextView tvSubTitle;
     private String subTitlePath;
 
+    private SubtitleAdapter subtitleAdapter;
+
+    private ProgressDialog dialogLoading;
+
+    private String lastPlayableVideoPath;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,6 +207,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         chapterID = intent.getStringExtra(Constants.CHAPTER_ID);
         chapterTitle = intent.getStringExtra(Constants.CHAPTER_TITLE);
         chapterPoster = intent.getStringExtra(Constants.CHAPTER_IMAGE);
+        subsceneLink = getIntent().getStringExtra(Constants.CHAPTER_SUBSCENE);
 
         setCastingFilmSuccess(this);
 
@@ -238,6 +253,33 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
                 mTabHost.newTabSpec("stream_link").setIndicator(
                         getString(R.string.stream_link)), StreamFragment.class,
                 null);
+
+        tvSubTitle = (TextView) findViewById(R.id.tvSubTitle);
+
+        videoView = (PlayBoxVideoView) findViewById(R.id.videoView);
+        videoView.setOnPreparedListener(this);
+        videoView.setOnErrorListener(this);
+        videoView.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+            @Override
+            public void onSeekComplete(MediaPlayer mediaPlayer) {
+                if (playerState == PlayerState.PLAYING) {
+                    videoView.start();
+                } else {
+                    videoView.pause();
+                }
+            }
+        });
+        videoView.requestFocus();
+
+        Button btnSubtitle = (Button) findViewById(R.id.btnSubtitle);
+        btnSubtitle.setOnClickListener(this);
+
+        getScreenSize();
+        resize();
+
+        dialogLoading = new ProgressDialog(this);
+        dialogLoading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialogLoading.setMessage("Please wait...");
 
         if (!GlobalSingleton.getInstance().offline) {
             AsyncHttpClient client = new AsyncHttpClient();
@@ -325,7 +367,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
 
                     @Override
                     public void onProgressChanged(SeekBar seekBar,
-                                                  int progress, boolean fromUser) {
+                            int progress, boolean fromUser) {
                         mProgress = progress;
                     }
                 });
@@ -340,24 +382,6 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
                 return true;
             }
         });
-
-        videoView = (PlayBoxVideoView) findViewById(R.id.videoView);
-        videoView.setOnPreparedListener(this);
-        videoView.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
-            @Override
-            public void onSeekComplete(MediaPlayer mediaPlayer) {
-                if (playerState == PlayerState.PLAYING) {
-                    videoView.start();
-                } else {
-                    videoView.pause();
-                }
-            }
-        });
-
-        getScreenSize();
-        resize();
-
-        tvSubTitle = (TextView) findViewById(R.id.tvSubTitle);
 
     }
 
@@ -649,21 +673,9 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         contentType = TYPE_OTHER;
 
         tvSubTitle.setText("");
-
-        DownloaderUtils
-                .downloadSubTitle(
-                        this,
-                        "http://subscene.com/subtitle/download?mac=QPPd1zX0Sq3uIy9N9v7P1sN7lDHHWIpZarWcT4l_j0SKNX90MCCMzI3353Q6wALP0",
-                        new ActionCallback<File>() {
-                            @Override
-                            public void onComplete(File subTitleFile) {
-                                subTitlePath = subTitleFile.getAbsolutePath();
-
-                                videoView.stopPlayback();
-                                videoView.setVideoPath(nowPlayingStream);
-                                videoView.start();
-                            }
-                        });
+        videoView.stopPlayback();
+        videoView.setVideoPath(nowPlayingStream);
+        videoView.start();
 
         // String videoUrl = streamObject.data.get(mPosition).stream;
         String imageurl = chapterPoster;
@@ -737,7 +749,6 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         Debug.logData(TAG, "loadVideoLink onstreamchange");
 
         tvSubTitle.setText("");
-        videoView.setTimedTextShown(false);
         loadVideoLink();
     }
 
@@ -1096,8 +1107,108 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
                             .show();
                 }
                 break;
+            case R.id.btnSubtitle:
+                if (subtitleAdapter == null) {
+                    dialogLoading.show();
+
+                    subtitleAdapter = new SubtitleAdapter();
+
+                    SubsceneParseList
+                            .getSubsceneData(
+                                    subsceneLink,
+                                    new ActionCallback<Map<String, List<SubsceneParseList.SubsceneObject>>>() {
+                                        @Override
+                                        public void onComplete(
+                                                Map<String, List<SubsceneParseList.SubsceneObject>> map) {
+                                            List<SubtitleAdapter.SubtitleDataHolder> data = new ArrayList<>();
+
+                                            for (String language : map.keySet()) {
+                                                SubtitleAdapter.SubtitleDataHolder dataHolder = new SubtitleAdapter.SubtitleDataHolder();
+                                                dataHolder.language = language;
+                                                dataHolder.subtitles = map.get(language);
+
+                                                data.add(dataHolder);
+                                            }
+
+                                            subtitleAdapter.setData(data);
+
+                                            dialogLoading.dismiss();
+                                            showSelectSubtitleDialog();
+                                        }
+                                    });
+                } else {
+                    showSelectSubtitleDialog();
+                }
+
+                break;
 
         }
+    }
+
+    private void showSelectSubtitleDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        ListView listView = (ListView) getLayoutInflater().inflate(
+                R.layout.layout_list_subtitle, null, false);
+        listView.setAdapter(subtitleAdapter);
+
+        builder.setView(listView);
+        builder.setTitle("Select subtitle");
+        final AlertDialog dialog = builder.create();
+
+        listView.setOnItemClickListener(new PinnedHeaderListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int section,
+                    int position, long id) {
+                dialogLoading.show();
+
+                final SubsceneParseList.SubsceneObject subsceneObject = subtitleAdapter
+                        .getItem(
+                                section, position);
+                SubsceneParseList.getDownloadLink(subsceneObject.link,
+                        new ActionCallback<String>() {
+                            @Override
+                            public void onComplete(String downloadLink) {
+                                DownloaderUtils
+                                        .downloadSubTitle(
+                                                VitamioPlayerActivity.this,
+                                                chapterTitle,
+                                                downloadLink,
+                                                new ActionCallback<File>() {
+                                                    @Override
+                                                    public void onComplete(File subTitleFile) {
+                                                        if (subTitleFile != null) {
+                                                            subTitlePath = subTitleFile
+                                                                    .getAbsolutePath();
+
+                                                            String convertedContent = SubsceneParseList
+                                                                    .stringFromSubFile(
+                                                                            subTitlePath,
+                                                                            subsceneObject.lang);
+                                                            Utils.writeToFile(
+                                                                    convertedContent,
+                                                                    subTitlePath);
+
+                                                            addSubtitleToVideo();
+                                                        }
+
+                                                        dialogLoading.dismiss();
+                                                    }
+                                                });
+                            }
+                        });
+
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onSectionClick(AdapterView<?> adapterView, View view, int section,
+                    long id) {
+
+            }
+        });
+
+        dialog.show();
     }
 
     void showStreamDialog() {
@@ -1281,11 +1392,7 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
     public void onPrepared(MediaPlayer mediaPlayer) {
         showVideo();
 
-        if (subTitlePath != null && subTitlePath.length() > 0) {
-            videoView.addTimedTextSource(subTitlePath);
-            videoView.setTimedTextShown(true);
-            videoView.setOnTimedTextListener(VitamioPlayerActivity.this);
-        }
+        addSubtitleToVideo();
 
         media_width = mediaPlayer.getVideoWidth();
         media_height = mediaPlayer.getVideoHeight();
@@ -1299,6 +1406,8 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
         videoView.seekTo(mProgress);
 
         playerState = PlayerState.PLAYING;
+
+        lastPlayableVideoPath = nowPlayingStream;
     }
 
     @Override
@@ -1310,6 +1419,26 @@ public class VitamioPlayerActivity extends SdkCastPlayerActivity implements
     @Override
     public void onTimedTextUpdate(byte[] bytes, int i, int i1) {
 
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+        loadingData.setVisibility(View.GONE);
+
+        nowPlayingStream = lastPlayableVideoPath;
+        videoView.stopPlayback();
+        videoView.setVideoPath(nowPlayingStream);
+        videoView.start();
+
+        return true;
+    }
+
+    private void addSubtitleToVideo() {
+        if (subTitlePath != null && subTitlePath.length() > 0) {
+            videoView.addTimedTextSource(subTitlePath);
+            videoView.setTimedTextShown(true);
+            videoView.setOnTimedTextListener(this);
+        }
     }
 
 }

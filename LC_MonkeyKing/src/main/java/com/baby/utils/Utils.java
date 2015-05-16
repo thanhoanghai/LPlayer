@@ -1,10 +1,5 @@
 package com.baby.utils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Formatter;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +21,16 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Formatter;
+import java.util.Locale;
 
 public class Utils {
 	public static DisplayImageOptions getDefaultOptionImage(int idImage) {
@@ -178,5 +183,31 @@ public class Utils {
 		InputMethodManager imm = (InputMethodManager) mContext
 				.getSystemService(Activity.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+	}
+
+	public static void writeToFile(String data, String fileName) {
+		try {
+			File file = new File(fileName);
+			if (!file.exists()) {
+				file.getParentFile().mkdirs();
+				file.createNewFile();
+			}
+			writeToFile(data, file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void writeToFile(String data, File file) {
+		try {
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(
+					file));
+			outputStreamWriter.write(data);
+			outputStreamWriter.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -22,6 +22,7 @@ import com.baby.constant.Constants;
 import com.baby.constant.GlobalSingleton;
 import com.baby.dataloader.DataLoader;
 import com.baby.dataloader.URLProvider;
+import com.baby.model.ChapterObject;
 import com.baby.model.ConfigureObject;
 import com.baby.model.DetailObject;
 import com.baby.utils.Debug;
@@ -108,6 +109,8 @@ public class DetailActivity extends ActionBarActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				ChapterObject chapterObject = (ChapterObject) chapterList.getAdapter().getItem(position);
+
 				GlobalSingleton.getInstance().offline = false;
 				Intent moviePlayer = new Intent(DetailActivity.this,
 						VitamioPlayerActivity.class);
@@ -116,6 +119,7 @@ public class DetailActivity extends ActionBarActivity {
 				moviePlayer.putExtra(Constants.CHAPTER_TITLE,
 						detailObject.data.chapters.get(position - 1).title);
 				moviePlayer.putExtra(Constants.CHAPTER_IMAGE, poster);
+				moviePlayer.putExtra(Constants.CHAPTER_SUBSCENE, chapterObject.subscene);
 				startActivity(moviePlayer);
 			}
 		});
@@ -213,6 +217,10 @@ public class DetailActivity extends ActionBarActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if (GlobalSingleton.getInstance().configureObject == null){
+			return;
+		}
+
 		if (GlobalSingleton.getInstance().configureObject.adsscreen > 0
 				&& GlobalSingleton.getInstance().countFilm >= GlobalSingleton
 						.getInstance().configureObject.adsfullcount) {

@@ -140,6 +140,15 @@
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white" />
 
+                <Button
+                    android:id="@+id/btnSubtitle"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/white"
+                    android:text="CC"
+                    android:textSize="12sp" />
+
                 <ImageView
                     android:id="@+id/streamBtn"
                     android:layout_width="20dip"

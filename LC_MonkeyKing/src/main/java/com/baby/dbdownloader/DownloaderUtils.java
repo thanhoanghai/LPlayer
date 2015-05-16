@@ -6,6 +6,7 @@ import android.app.DownloadManager.Query;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.text.TextUtils;
 
@@ -13,10 +14,6 @@ import com.baby.constant.Constants;
 import com.baby.downloader.DownloadCache;
 import com.baby.policy.ActionCallback;
 import com.baby.utils.Utils;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
-
-import org.apache.http.Header;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -24,6 +21,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -158,82 +159,140 @@ public class DownloaderUtils {
         return fileName;
     }
 
-    public static void downloadSubTitle(final Context context, String subtitleLink,
-            final ActionCallback<File> onComplete) {
-        String timestamp = System.currentTimeMillis() + "";
-        final File subFolder = new File(context.getCacheDir() + Constants.FOLDER_SUBTITLES + timestamp);
-        if (!subFolder.exists()) {
-            subFolder.mkdirs();
-        }
-
-        downloadFile(context, subtitleLink, new ActionCallback<File>() {
-            @Override
-            public void onComplete(File zipFile) {
-                unzip(zipFile, subFolder);
-                File[] files = subFolder.listFiles();
-                if (files.length > 0 && onComplete != null) {
-                    onComplete.onComplete(files[0]);
-                }
+    public static void downloadSubTitle(final Context context, String chapterTitle,
+            String subtitleLink, final ActionCallback<File> onComplete) {
+        try {
+            chapterTitle = chapterTitle.replaceAll("\\W", "-");
+            final File subFolder = new File(
+                    context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) +
+                            Constants.FOLDER_SUBTITLES, chapterTitle);
+            if (!subFolder.exists()) {
+                subFolder.mkdirs();
             }
-        });
+
+            File subFile = new File(subFolder, chapterTitle + ".zip");
+            if (!subFile.exists()) {
+                subFile.createNewFile();
+            }
+
+            downloadFile(subtitleLink, subFile, new ActionCallback<File>() {
+                @Override
+                public void onComplete(final File zipFile) {
+                    if (zipFile.exists()) {
+                        unzip(zipFile, subFolder, new ActionCallback() {
+                            @Override
+                            public void onComplete(Object callbackData) {
+                                zipFile.delete();
+
+                                File[] files = subFolder.listFiles();
+                                if (files != null && files.length > 0) {
+                                    if (onComplete != null) {
+                                        onComplete.onComplete(files[0]);
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    if (onComplete != null) {
+                        onComplete.onComplete(null);
+                    }
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            if (onComplete != null) {
+                onComplete.onComplete(null);
+            }
+        }
     }
 
-    public static void downloadFile(Context context, String url,
+    public static void downloadFile(final String link, final File destinationFile,
             final ActionCallback<File> onComplete) {
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url, new FileAsyncHttpResponseHandler(context) {
+        new AsyncTask<Void, Void, File>() {
 
             @Override
-            public void onSuccess(int i, Header[] headers, File file) {
+            protected File doInBackground(Void... params) {
+                int count;
+
+                try {
+                    URL url = new URL(link);
+                    URLConnection conexion = url.openConnection();
+                    conexion.connect();
+
+                    InputStream input = new BufferedInputStream(url.openStream());
+                    OutputStream output = new FileOutputStream(destinationFile);
+
+                    byte data[] = new byte[1024];
+
+                    while ((count = input.read(data)) != -1) {
+                        output.write(data, 0, count);
+                    }
+
+                    output.flush();
+                    output.close();
+                    input.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return destinationFile;
+            }
+
+            @Override
+            protected void onPostExecute(File file) {
                 if (onComplete != null) {
                     onComplete.onComplete(file);
                 }
             }
+        }.execute();
+    }
+
+    public static void unzip(final File zipFile, final File targetDirectory,
+            final ActionCallback callback) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                ZipInputStream zis;
+                try {
+                    zis = new ZipInputStream(
+                            new BufferedInputStream(new FileInputStream(zipFile)));
+                    ZipEntry ze;
+                    int count;
+                    byte[] buffer = new byte[8192];
+                    while ((ze = zis.getNextEntry()) != null) {
+                        File file = new File(targetDirectory, ze.getName());
+                        File dir = ze.isDirectory() ? file : file.getParentFile();
+                        if (!dir.isDirectory() && !dir.mkdirs())
+                            throw new FileNotFoundException("Failed to ensure directory: " +
+                                    dir.getAbsolutePath());
+                        if (ze.isDirectory())
+                            continue;
+                        FileOutputStream fout = new FileOutputStream(file);
+                        try {
+                            while ((count = zis.read(buffer)) != -1)
+                                fout.write(buffer, 0, count);
+                        } finally {
+                            fout.close();
+                        }
+                    }
+
+                    zis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
 
             @Override
-            public void onFailure(int i, Header[] headers, Throwable throwable, File file) {
-                if (onComplete != null) {
-                    onComplete.onComplete(null);
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+
+                if (callback != null) {
+                    callback.onComplete(null);
                 }
             }
-        });
+        }.execute();
     }
 
-    public static void unzip(File zipFile, File targetDirectory) {
-        ZipInputStream zis = null;
-        try {
-            zis = new ZipInputStream(
-                    new BufferedInputStream(new FileInputStream(zipFile)));
-
-            try {
-                ZipEntry ze;
-                int count;
-                byte[] buffer = new byte[8192];
-                while ((ze = zis.getNextEntry()) != null) {
-                    File file = new File(targetDirectory, ze.getName());
-                    File dir = ze.isDirectory() ? file : file.getParentFile();
-                    if (!dir.isDirectory() && !dir.mkdirs())
-                        throw new FileNotFoundException("Failed to ensure directory: " +
-                                dir.getAbsolutePath());
-                    if (ze.isDirectory())
-                        continue;
-                    FileOutputStream fout = new FileOutputStream(file);
-                    try {
-                        while ((count = zis.read(buffer)) != -1)
-                            fout.write(buffer, 0, count);
-                    } finally {
-                        fout.close();
-                    }
-                    /*
-                     * if time should be restored as well long time = ze.getTime(); if (time > 0)
-                     * file.setLastModified(time);
-                     */
-                }
-            } finally {
-                zis.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -28,4 +28,5 @@
     <color name="mr_custom_title">#EEFF41</color>
     <color name="actionbar">#506a7d</color>
 	<color name="subtitle_bg">#88111111</color>
+	<color name="silver">#bdc3c7</color>
 </resources>

@@ -1,7 +1,5 @@
 package com.baby.adapters;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +9,8 @@ import android.widget.TextView;
 
 import com.baby.cartoonnetwork.R;
 import com.baby.model.ChapterObject;
+
+import java.util.ArrayList;
 
 public class DetailAdapter extends BaseAdapter {
 
@@ -55,7 +55,7 @@ public class DetailAdapter extends BaseAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return null;
+		return values.get(position);
 	}
 
 	@Override
